@@ -277,6 +277,7 @@ if (touchScreen == false) {
         orbiting = false;
     });
 } else {
+    trackBall.noPan = true;
     window.addEventListener("touchstart", e => {
         mouseDown = true;
         mousePosition.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
@@ -285,7 +286,11 @@ if (touchScreen == false) {
         intersects = rayCaster.intersectObjects(scene.children);
         currObject = intersects[0];
         if (!currObject) {
+            trackBall.enabled = true;
             orbiting = true;
+        } else {
+            trackBall.enabled = false;
+            orbiting = false;
         }
     });
     window.addEventListener("touchmove", e => {
@@ -653,7 +658,7 @@ function animate() {
     }
 
 
-    if (mouseDown == false && lock == true) {
+    if ((mouseDown == false || !currObject) && lock == true) {
         toCoord[0] = (Math.round((toCoord[0]/4)+0.5)-0.5)*4;
         lock = false;
     }
@@ -781,15 +786,15 @@ function animate() {
         reset = false;
         ready = true;
     }
-
-    if (currObject == undefined || (mouseDown == true && initObject == undefined)) {
-        trackBall.enabled = true;
-        orbiting = true;
-    } else {
-        trackBall.enabled = false;
-        orbiting = false;
+    if (touchScreen == false) {
+        if (currObject == undefined || (mouseDown == true && initObject == undefined)) {
+            trackBall.enabled = true;
+            orbiting = true;
+        } else {
+            trackBall.enabled = false;
+            orbiting = false;
+        }
     }
-
     renderer.render(scene,camera);
 }
 

@@ -244,6 +244,7 @@ window.addEventListener('mousemove',e => {
     mousePosition.y = - (e.clientY / window.innerHeight) * 2 + 1;
 });
 
+
 const rayCaster = new THREE.Raycaster();
 
 let mouseDown = false;
@@ -263,10 +264,12 @@ window.addEventListener('mousedown', e => {
     mouseDown = true;
 });
 
+
 window.addEventListener('mouseup', e => {
     mouseDown = false;
     orbiting = false;
 });
+
 
 function firstOfRType(obj,val) {
     for (let item of obj) {
@@ -530,6 +533,9 @@ function desiredCoord(normal,taxis,coord) {
 function roundCubelets(collection) {
     for (let item of collection) {
         item.position.round();
+        item.rotation.x = Math.round(item.rotation.x*(2/Math.PI))*(Math.PI/2);
+        item.rotation.y = Math.round(item.rotation.y*(2/Math.PI))*(Math.PI/2);
+        item.rotation.z = Math.round(item.rotation.z*(2/Math.PI))*(Math.PI/2);
     }
 }
 

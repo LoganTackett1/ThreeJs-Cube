@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-//import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
-import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js';
+//import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js';
+import TrackballControls from 'three-trackballcontrols';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 const renderer = new THREE.WebGLRenderer({antialias:true});
@@ -258,7 +258,6 @@ let initObject;
 let initCubelet;
 let initPlane;
 
-
 if (touchScreen == false) {
     window.addEventListener('mousemove',e => {
         mousePosition.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -279,6 +278,7 @@ if (touchScreen == false) {
 } else {
     trackBall.noPan = true;
     window.addEventListener("touchstart", e => {
+        trackBall.update();
         mouseDown = true;
         mousePosition.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
         mousePosition.y = - (e.touches[0].clientY / window.innerHeight) * 2 + 1;
@@ -294,14 +294,17 @@ if (touchScreen == false) {
         }
     });
     window.addEventListener("touchmove", e => {
+        trackBall.update();
         mousePosition.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
         mousePosition.y = - (e.touches[0].clientY / window.innerHeight) * 2 + 1;
     });
     window.addEventListener("touchcancel", e => {
+        trackBall.update();
         mouseDown = false;
         orbiting = false;
     });
     window.addEventListener("touchend", e => {
+        trackBall.update();
         mouseDown = false;
         orbiting = false;
     });
@@ -612,6 +615,7 @@ let radius;
 let intersects;
 
 function animate() {
+    
     trackBall.update();
     rayCaster.setFromCamera(mousePosition,camera);
     intersects = rayCaster.intersectObjects(scene.children);
@@ -627,18 +631,18 @@ function animate() {
             initObject = currObject;
             initPlane = currPlane;
             initCubelet = currCubelet;
+            if (touchScreen == true) {
+                currObject = null;
+                currPlane = null;
+                currCubelet = null;
+            }
         }
     }
-
-    console.log([currPlane,initPlane]);
 
     if (mouseDown == false && (initObject == null || initPlane == null || initCubelet == null || movePieces == false)) {
         initCubelet = null;
         initObject = null;
         initPlane = null;
-        currObject = null;
-        currPlane = null;
-        currCubelet = null;
     } else if (mouseDown == true && initObject != null && initPlane && initCubelet && orbiting == false && ready == true && reset == false) {
         if (initPlane && currPlane && initCubelet) {
             let delta = new THREE.Vector3();
@@ -790,9 +794,12 @@ function animate() {
         initCubelet = null;
         initObject = null;
         initPlane = null;
-        currObject = null;
-        currPlane = null;
-        currCubelet = null;
+        if (touchScreen == true) {
+            currObject = null;
+            currPlane = null;
+            currCubelet = null;
+        }
+
         reset = false;
         ready = true;
     }

@@ -1,6 +1,5 @@
 import * as THREE from 'three';
-//import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js';
-import TrackballControls from 'three-trackballcontrols';
+import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 const renderer = new THREE.WebGLRenderer({antialias:true});

@@ -250,6 +250,7 @@ const mousePosition = new THREE.Vector2();
 const rayCaster = new THREE.Raycaster();
 
 let mouseDown = false;
+let clickToggle = false;
 let currObject;
 let currCubelet;
 let currPlane;
@@ -277,20 +278,11 @@ if (touchScreen == false) {
 } else {
     trackBall.noPan = true;
     window.addEventListener("touchstart", e => {
+        clickToggle = true;
         trackBall.update();
         mouseDown = true;
         mousePosition.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
         mousePosition.y = - (e.touches[0].clientY / window.innerHeight) * 2 + 1;
-        rayCaster.setFromCamera(mousePosition,camera);
-        intersects = rayCaster.intersectObjects(scene.children);
-        currObject = intersects[0];
-        if (!currObject) {
-            trackBall.enabled = true;
-            orbiting = true;
-        } else {
-            trackBall.enabled = false;
-            orbiting = false;
-        }
     });
     window.addEventListener("touchmove", e => {
         trackBall.update();
@@ -616,13 +608,31 @@ let intersects;
 function animate() {
     
     trackBall.update();
-    rayCaster.setFromCamera(mousePosition,camera);
-    intersects = rayCaster.intersectObjects(scene.children);
-
+    if (touchScreen == false) {
+        rayCaster.setFromCamera(mousePosition,camera);
+        intersects = rayCaster.intersectObjects(scene.children);
+    } else if (mouseDown == true && touchScreen == true) {
+        rayCaster.setFromCamera(mousePosition,camera);
+        intersects = rayCaster.intersectObjects(scene.children);
+    }
+    
     if (touchScreen == false || (touchScreen == true && mouseDown == true)) {
         currObject = intersects[0];
         currPlane = firstOfRType(intersects,"plane");
         currCubelet = firstCube(intersects);
+    }
+
+    if (clickToggle == true) {
+        clickToggle = false;
+        if (!currPlane && !currCubelet) {
+            orbiting = true;
+            trackBall.noRotate = false;
+            trackBall.noZoom = false;
+        } else {
+            orbiting = false;
+            trackBall.noRotate = true;
+            trackBall.noZoom = true;
+        }
     }
 
     if ((!initObject || !initPlane || !initCubelet) && touchScreen == true && mouseDown == true) {
@@ -804,10 +814,18 @@ function animate() {
     }
     if (touchScreen == false) {
         if (currObject == undefined || (mouseDown == true && initObject == undefined)) {
-            trackBall.enabled = true;
+            if (touchScreen == false) {trackBall.enabled = true;}
+            if (touchScreen == true) {
+                trackBall.noRotate = false;
+                trackBall.noZoom = false;
+            }
             orbiting = true;
         } else {
-            trackBall.enabled = false;
+            if (touchScreen == false) {trackBall.enabled = false;}
+            if (touchScreen == true) {
+                trackBall.noRotate = true;
+                trackBall.noZoom = true;
+            }
             orbiting = false;
         }
     }

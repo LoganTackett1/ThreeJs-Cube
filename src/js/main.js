@@ -18,7 +18,7 @@ const camera = new THREE.PerspectiveCamera(40,window.innerWidth/window.innerHeig
 //const orbit = new OrbitControls(camera, renderer.domElement); 
 
 const trackBall = new TrackballControls(camera, renderer.domElement);
-trackBall.rotateSpeed = 3.0;
+
 
 camera.position.set(18,18,18);
 trackBall.update();
@@ -244,6 +244,16 @@ window.mobileAndTabletCheck = function() {
   };
 
 let touchScreen = window.mobileAndTabletCheck();
+
+if (touchScreen == false) {
+    trackBall.rotateSpeed = 3.5;
+    trackBall.minDistance = 15;
+    trackBall.maxDistance = 50;
+} else {
+    trackBall.rotateSpeed = 2.0;
+    trackBall.minDistance = 18;
+    trackBall.maxDistance = 50;
+}
 
 const mousePosition = new THREE.Vector2();
 

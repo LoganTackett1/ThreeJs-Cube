@@ -616,9 +616,11 @@ function animate() {
     rayCaster.setFromCamera(mousePosition,camera);
     intersects = rayCaster.intersectObjects(scene.children);
 
-    currObject = intersects[0];
-    currPlane = firstOfRType(intersects,"plane");
-    currCubelet = firstCube(intersects);
+    if (touchScreen == false || (touchScreen == true && mouseDown == true)) {
+        currObject = intersects[0];
+        currPlane = firstOfRType(intersects,"plane");
+        currCubelet = firstCube(intersects);
+    }
 
     if ((!initObject || !initPlane || !initCubelet) && touchScreen == true && mouseDown == true) {
         if (orbiting == false) {
@@ -628,10 +630,15 @@ function animate() {
         }
     }
 
-    if (mouseDown == false && (initObject == null || initPlane == null || initCubelet == null)) {
+    console.log([currPlane,initPlane]);
+
+    if (mouseDown == false && (initObject == null || initPlane == null || initCubelet == null || movePieces == false)) {
         initCubelet = null;
         initObject = null;
         initPlane = null;
+        currObject = null;
+        currPlane = null;
+        currCubelet = null;
     } else if (mouseDown == true && initObject != null && initPlane && initCubelet && orbiting == false && ready == true && reset == false) {
         if (initPlane && currPlane && initCubelet) {
             let delta = new THREE.Vector3();
@@ -780,9 +787,12 @@ function animate() {
     }
 
     if (reset == true) {
+        initCubelet = null;
         initObject = null;
         initPlane = null;
-        initCubelet = null;
+        currObject = null;
+        currPlane = null;
+        currCubelet = null;
         reset = false;
         ready = true;
     }

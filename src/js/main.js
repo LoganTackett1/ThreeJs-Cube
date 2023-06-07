@@ -200,11 +200,13 @@ for (let item of cubes) {
 }
 
 function resetCube() {
-    for (let item of cubes) {
-        item.position.set(item.solvedPos.x,item.solvedPos.y,item.solvedPos.z);
-        item.rotation.x = item.solvedRot._x;
-        item.rotation.y = item.solvedRot._y;
-        item.rotation.z = item.solvedRot._z;
+    if (!(scramToggle == true || movePieces == true)) {
+        for (let item of cubes) {
+            item.position.set(item.solvedPos.x,item.solvedPos.y,item.solvedPos.z);
+            item.rotation.x = item.solvedRot._x;
+            item.rotation.y = item.solvedRot._y;
+            item.rotation.z = item.solvedRot._z;
+        }
     }
 }
 
@@ -1096,5 +1098,6 @@ window.addEventListener("resize", function () {
     camera.aspect = window.innerWidth/window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth,window.innerHeight);
+    labelRenderer.setSize(window.innerWidth,window.innerHeight*0.1);
 })
 

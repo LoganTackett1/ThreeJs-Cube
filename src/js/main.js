@@ -635,17 +635,74 @@ container.appendChild(scrambleBtn);
 const containerObject = new CSS2DObject(container);
 scene.add(containerObject);
 
+let scrambleStack = {}
+scrambleStack.current = null;
+scrambleStack.stack = [];
+let scramToggle = false;
+
+// R is right clockwise r is right counter clockwise
+
+function generateScramble() {
+    if (scramToggle == false) {
+    for (let i = 1; i <= 20; i++) {
+        let num = Math.floor(12*Math.random());
+        if (num == 0) {
+            scrambleStack.stack.push("R");
+        }
+        if (num == 1) {
+            scrambleStack.stack.push("r");
+        }
+        if (num == 2) {
+            scrambleStack.stack.push("L");
+        }
+        if (num == 3) {
+            scrambleStack.stack.push("l");
+        }
+        if (num == 4) {
+            scrambleStack.stack.push("U");
+        }
+        if (num == 5) {
+            scrambleStack.stack.push("u");
+        }
+        if (num == 6) {
+            scrambleStack.stack.push("D");
+        }
+        if (num == 7) {
+            scrambleStack.stack.push("d");
+        }
+        if (num == 8) {
+            scrambleStack.stack.push("F");
+        }
+        if (num == 9) {
+            scrambleStack.stack.push("f");
+        }
+        if (num == 10) {
+            scrambleStack.stack.push("B");
+        }
+        if (num == 11) {
+            scrambleStack.stack.push("b");
+        }
+    }
+    scramToggle = true;
+}
+}
+
 if (touchScreen == false) {
     resetBtn.addEventListener("click", e => {
         resetCube();
+    });
+    scrambleBtn.addEventListener("click", e => {
+        generateScramble();
     });
 }
 if (touchScreen == true) {
     resetBtn.addEventListener("touchstart", e => {
         resetCube();
     });
+    scrambleBtn.addEventListener("touchstart", e => {
+        generateScramble();
+    });
 }
-
 
 /*
 let bool = true;
@@ -664,6 +721,12 @@ let reset = false;
 let ready = true;
 let radius;
 let intersects;
+let rStep;
+let selectSide = [];
+
+let angle;
+let axis;
+
 
 function animate() {
     
@@ -692,6 +755,140 @@ function animate() {
             orbiting = false;
             trackBall.noRotate = true;
             trackBall.noZoom = true;
+        }
+    }
+
+    if (scramToggle == true) {
+        ready = false;
+        if (scrambleStack.current != null) {
+            if (selectSide.length == 0) {
+                if (scrambleStack.current == "R") {
+                    axis = "x";
+                    angle = Math.PI/16;
+                    for (let item of cubes) {
+                        if (item.position.x == 2) {
+                            selectSide.push(item);
+                        }
+                    }
+                }
+                if (scrambleStack.current == "r") {
+                    axis = "x";
+                    angle = -Math.PI/16;
+                    for (let item of cubes) {
+                        if (item.position.x == 2) {
+                            selectSide.push(item);
+                        }
+                    }
+                }
+                if (scrambleStack.current == "L") {
+                    axis = "x";
+                    angle = Math.PI/16;
+                    for (let item of cubes) {
+                        if (item.position.x == -2) {
+                            selectSide.push(item);
+                        }
+                    }
+                }
+                if (scrambleStack.current == "l") {
+                    axis = "x";
+                    angle = -Math.PI/16;
+                    for (let item of cubes) {
+                        if (item.position.x == -2) {
+                            selectSide.push(item);
+                        }
+                    }
+                }
+                if (scrambleStack.current == "U") {
+                    axis = "y";
+                    angle = Math.PI/16;
+                    for (let item of cubes) {
+                        if (item.position.y == 2) {
+                            selectSide.push(item);
+                        }
+                    }
+                }
+                if (scrambleStack.current == "u") {
+                    axis = "y";
+                    angle = -Math.PI/16;
+                    for (let item of cubes) {
+                        if (item.position.y == 2) {
+                            selectSide.push(item);
+                        }
+                    }
+                }
+                if (scrambleStack.current == "D") {
+                    axis = "y";
+                    angle = Math.PI/16;
+                    for (let item of cubes) {
+                        if (item.position.y == -2) {
+                            selectSide.push(item);
+                        }
+                    }
+                }
+                if (scrambleStack.current == "d") {
+                    axis = "y";
+                    angle = -Math.PI/16;
+                    for (let item of cubes) {
+                        if (item.position.y == -2) {
+                            selectSide.push(item);
+                        }
+                    }
+                }
+                if (scrambleStack.current == "F") {
+                    axis = "z";
+                    angle = Math.PI/16;
+                    for (let item of cubes) {
+                        if (item.position.z == 2) {
+                            selectSide.push(item);
+                        }
+                    }
+                }
+                if (scrambleStack.current == "f") {
+                    axis = "z";
+                    angle = -Math.PI/16;
+                    for (let item of cubes) {
+                        if (item.position.z == 2) {
+                            selectSide.push(item);
+                        }
+                    }
+                }
+                if (scrambleStack.current == "B") {
+                    axis = "z";
+                    angle = Math.PI/16;
+                    for (let item of cubes) {
+                        if (item.position.z == -2) {
+                            selectSide.push(item);
+                        }
+                    }
+                }
+                if (scrambleStack.current == "b") {
+                    axis = "z";
+                    angle = -Math.PI/16;
+                    for (let item of cubes) {
+                        if (item.position.z == -2) {
+                            selectSide.push(item);
+                        }
+                    }
+                }
+            }
+            if (rStep == 0) {
+                scrambleStack.current = null;
+                roundCubelets(selectSide);
+                selectSide = [];
+            } else {
+                rStep -= 1;
+                for (let item of selectSide) {
+                    calcRotationAroundAxis(item,axis,angle);
+                }
+            }
+        } else {
+            if (scrambleStack.stack.length == 0) {
+                scramToggle = false;
+                ready = true;
+            } else {
+                scrambleStack.current = scrambleStack.stack.pop();
+                rStep = 8;
+            }
         }
     }
 
@@ -895,10 +1092,9 @@ function animate() {
 
 renderer.setAnimationLoop(animate);
 
-window.addEventListener("resize", e => {
+window.addEventListener("resize", function () {
     camera.aspect = window.innerWidth/window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth,window.innerHeight);
-    labelRenderer.setSize(this.window.innerWidth,this.window.innerHeight);
 })
 

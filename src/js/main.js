@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
 
 const renderer = new THREE.WebGLRenderer({antialias:true});
 
@@ -8,6 +9,7 @@ renderer.setSize(window.innerWidth,window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio*0.8);
 
 document.body.appendChild(renderer.domElement);
+
 
 const scene = new THREE.Scene();
 
@@ -191,6 +193,20 @@ const oURL = new URL('../blender/edges_centers/O.glb',import.meta.url);
 const O = new Cubelet(oURL);
 O.position.set(-2,0,0);
 O.rotateZ(Math.PI/2);
+
+for (let item of cubes) {
+    item.solvedPos = {...item.position};
+    item.solvedRot = {...item.rotation};
+}
+
+function resetCube() {
+    for (let item of cubes) {
+        item.position.set(item.solvedPos.x,item.solvedPos.y,item.solvedPos.z);
+        item.rotation.x = item.solvedRot._x;
+        item.rotation.y = item.solvedRot._y;
+        item.rotation.z = item.solvedRot._z;
+    }
+}
 
 
 
@@ -597,6 +613,32 @@ function mapBase(dir) {
     return dir;
 }
 
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(window.innerWidth,window.innerHeight*0.1);
+labelRenderer.domElement.style.position = "absolute";
+labelRenderer.domElement.style.bottom = "0px";
+document.body.appendChild(labelRenderer.domElement);
+
+const container = document.createElement("div");
+container.className = "container";
+
+const resetBtn = document.createElement("button");
+resetBtn.className = "reset_button";
+resetBtn.textContent = "Reset";
+container.appendChild(resetBtn);
+
+const scrambleBtn = document.createElement("button");
+scrambleBtn.className = "scramble_button";
+scrambleBtn.textContent = "Scramble";
+container.appendChild(scrambleBtn);
+
+const containerObject = new CSS2DObject(container);
+scene.add(containerObject);
+
+resetBtn.addEventListener("click", e => {
+    resetCube();
+});
+
 /*
 let bool = true;
 let number = 30;
@@ -840,7 +882,15 @@ function animate() {
         }
     }
     renderer.render(scene,camera);
+    labelRenderer.render(scene,camera);
 }
 
 renderer.setAnimationLoop(animate);
+
+window.addEventListener("resize", e => {
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+    labelRenderer.setSize(this.window.innerWidth,this.window.innerHeight);
+})
 

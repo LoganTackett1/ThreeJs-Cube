@@ -635,9 +635,17 @@ container.appendChild(scrambleBtn);
 const containerObject = new CSS2DObject(container);
 scene.add(containerObject);
 
-resetBtn.addEventListener("click", e => {
-    resetCube();
-});
+if (touchScreen == false) {
+    resetBtn.addEventListener("click", e => {
+        resetCube();
+    });
+}
+if (touchScreen == true) {
+    resetBtn.addEventListener("touchstart", e => {
+        resetCube();
+    });
+}
+
 
 /*
 let bool = true;
